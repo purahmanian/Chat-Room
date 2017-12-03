@@ -22,16 +22,18 @@ import javax.swing.JTextField;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.control.TextArea;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
 public class Client extends Application{
 	
-	private static BufferedReader reader;
-	private static PrintWriter writer;
-	private static JTextArea incoming;
-	private static JTextField outgoing;
+	private BufferedReader reader;
+	private PrintWriter writer;
+	private JTextArea incoming;
+	private JTextField outgoing;
+	private ClientGUI gui;
 	
 	static GridPane grid = new GridPane();
 	static Canvas canvas = new Canvas();
@@ -41,30 +43,20 @@ public class Client extends Application{
 		launch(args);
 	}
 	
-	static class IncomingReader implements Runnable {
+	class IncomingReader implements Runnable {
 		public void run() {
-			
+			boolean flag = false;
 			while(true){
 				String message;
 				try {
 					while ((message = reader.readLine()) != null) {
+						flag = true;
 						incoming.append(message + "\n");
 					}
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		}
-	}
-	
-	static class OutgoingWriter implements Runnable {
-		public void run() {
-			while(true){
-				String message;
-				try {
-					while ((message = reader.readLine()) != null) {
-						incoming.append(message + "\n");
+					if(flag) {
+						flag = false;
+						TextArea text = gui.getMessages();
+						text.appendText("hello");
 					}
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
@@ -82,8 +74,8 @@ public class Client extends Application{
 			
 			
 			InputStreamReader streamReader = new InputStreamReader(socket.getInputStream());
-			reader = new BufferedReader(streamReader);
-			writer = new PrintWriter(socket.getOutputStream());
+			this.reader = new BufferedReader(streamReader);
+			this.writer = new PrintWriter(socket.getOutputStream());
 			Thread readerThread = new Thread(new IncomingReader());
 			
 
@@ -97,17 +89,16 @@ public class Client extends Application{
 			primaryStage.setScene(scene);
 			
 			primaryStage.show();
-			//canvas.setWidth(250);
-			//canvas.setHeight(250);
-			grid.getColumnConstraints().add(new ColumnConstraints(50));
-			grid.getColumnConstraints().add(new ColumnConstraints(100));
-			grid.getColumnConstraints().add(new ColumnConstraints(100));
-			grid.getColumnConstraints().add(new ColumnConstraints(100));
-			grid.getColumnConstraints().add(new ColumnConstraints(100));
-			grid.getColumnConstraints().add(new ColumnConstraints(50));
-			ClientGUI.paint();
 
+			grid.getColumnConstraints().add(new ColumnConstraints(50));
+			grid.getColumnConstraints().add(new ColumnConstraints(100));
+			grid.getColumnConstraints().add(new ColumnConstraints(100));
+			grid.getColumnConstraints().add(new ColumnConstraints(100));
+			grid.getColumnConstraints().add(new ColumnConstraints(100));
+			grid.getColumnConstraints().add(new ColumnConstraints(50));
 			
+			gui = new ClientGUI();
+
 			
 			
 		} catch (UnknownHostException e) {
@@ -119,6 +110,7 @@ public class Client extends Application{
 		}
 		
 	}
+
 }
 
 

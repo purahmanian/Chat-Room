@@ -21,6 +21,32 @@ public class ServerMain {
 
 	private static ArrayList<PrintWriter> clientOutputStreams;
 	
+	static class ClientHandler implements Runnable{
+		
+		private BufferedReader reader;
+		public ClientHandler(Socket clientSocket) {
+			Socket sock = clientSocket;
+			try {
+				reader = new BufferedReader(new InputStreamReader(sock.getInputStream()));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}
+		public void run() {
+			String message;
+			try {
+				while ((message = reader.readLine()) != null) {
+					notifyClients(message);
+				}
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
 	public static void main(String[] args) {
 		ServerSocket serverSock = null;
 
@@ -49,31 +75,11 @@ public class ServerMain {
 		}
 
 	}
+
 	
-	public static class ClientHandler implements Runnable{
-		
-		private BufferedReader reader;
-		public ClientHandler(Socket clientSocket) {
-			Socket sock = clientSocket;
-			try {
-				reader = new BufferedReader(new InputStreamReader(sock.getInputStream()));
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		public void run() {
-			String message;
-			try {
-				while ((message = reader.readLine()) != null) {
-					notifyClients(message);
-				}
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-	}
+	
+
+	
 	
 	private static void notifyClients(String message) {
 		for (PrintWriter writer : clientOutputStreams) {
