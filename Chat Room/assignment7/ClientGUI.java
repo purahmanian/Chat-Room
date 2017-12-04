@@ -26,15 +26,59 @@ import javafx.scene.paint.Color;
 
 public class ClientGUI {
 	TextArea messages;
+	TextArea write;
+	Button button;
+	boolean send = false;
+	boolean setUsername = false;
+	String usernameText = "";
 	
 	ClientGUI(){
 		this.messages = null;
-		paint();
+		this.write = null;
+		this.button = null;
+		
+		findUser();
+
+	}
+	
+	public String getUser() {
+		return this.usernameText;
 	}
 	
 	public TextArea getMessages() {
 		return this.messages;
 	}
+	
+	public void findUser() {
+		Client.grid.getChildren().clear();
+		
+		
+		
+		TextArea username = new TextArea();
+		username.setMinWidth(320);
+		username.setMinHeight(20);
+		username.setMaxHeight(100);
+		username.setWrapText(true);
+		Client.grid.add(username, 1, 2);
+
+		
+        Button button = new Button();
+        button.setText("Send");
+        button.setMinHeight(100);
+        button.setMinWidth(100);
+        button.setOnAction(new EventHandler<ActionEvent>() {
+       	 
+            @Override
+            public void handle(ActionEvent event) {
+                send = true;
+                setUsername = true;
+                usernameText = username.getText();
+                paint();
+            }
+        });
+        Client.grid.add(button, 4, 2);
+	}
+	
 	
 	public void paint() {
 		Client.grid.getChildren().clear(); // clean up grid.
@@ -49,14 +93,35 @@ public class ClientGUI {
         
 	        
 		this.messages = new TextArea();
-		
-		this.messages.setMinWidth(400);
-		this.messages.setMinHeight(155);
-		
+		this.messages.setMinWidth(430);
+		this.messages.setMinHeight(300);
 		this.messages.setWrapText(true);
-		this.messages.setEditable(false);	       
+		this.messages.setEditable(false);	
+		Client.grid.add(this.messages, 1, 1);
+		
+		this.write = new TextArea();
+		this.write.setMinWidth(320);
+		this.write.setMinHeight(20);
+		this.write.setMaxHeight(100);
+		this.write.setWrapText(true);
+		Client.grid.add(this.write, 1, 2);
+
+        this.button = new Button();
+        this.button.setText("Send");
+        this.button.setMinHeight(100);
+        this.button.setMinWidth(100);
+        this.button.setOnAction(new EventHandler<ActionEvent>() {
+       	 
+            @Override
+            public void handle(ActionEvent event) {
+                send = true;
+                write.setText("");
+            }
+        });
+        Client.grid.add(this.button, 4, 2);
         
-        Client.grid.add(this.messages, 1, 1);
+
+        
 
         /*case 2: 
 			b = new Button();
